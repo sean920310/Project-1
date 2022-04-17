@@ -13,5 +13,4 @@ int main()
 	cout << num2 + num2 << endl;
 	cin >> num2 >> num1;
 	cout << num2 << endl << num1 << endl;
-	//"asdasd";
 }
