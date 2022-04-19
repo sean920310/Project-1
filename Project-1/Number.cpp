@@ -175,7 +175,11 @@ Number Number::operator+(const Number& rhs)
 	}
 	else
 	{
-		in2.insert(in2.begin(), 0);
+		for (int i = 0; i < abs(point - rhs.point); i++)
+		{
+			in2.insert(in2.begin(), 0);
+		}
+		
 	}
 	int max = in1.size();
 	if (in2.size() > in1.size()) {
@@ -258,11 +262,12 @@ Number Number::operator+(const Number& rhs)
 		input.at(i) = num;
 	}
 	int time = 0;
-	while (input.at(input.size() - 1 - time) == 0)
+	while (input.at(input.size() - 1 - time) == 0 && time > input.size() )
 	{
 		time++;
 	}
 	bool sign = input.at(input.size() - 1 - time) > 0;
+	co.negative = true;
 	if (sign) {
 
 		co.negative = false;
