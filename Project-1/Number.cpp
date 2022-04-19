@@ -20,7 +20,7 @@ bool Number::isZero() const
 {
 	Number num(*this);
 	num.clearZero();
-	return (num.bigNum.size() == 1 && num.bigNum[1] == 0);
+	return (num.bigNum.size() == 1 && num.bigNum[num.bigNum.size()-1] == 0);//哭阿然是這裡笑死
 }
 
 void Number::pushLeft()
@@ -162,158 +162,147 @@ Number& Number::operator=(const Number& rhs)
 
 Number Number::operator+(const Number& rhs)
 {
-
-	vector<int> in1 = bigNum;
-	vector<int> in2 = rhs.bigNum;
-	vector<int> ans;
-
-	int mosP = point;
-	if (rhs.point > mosP) {
-		mosP = rhs.point;
-		for (int i = 0; i < abs(point - rhs.point); i++)
-		{
-			in1.insert(in1.begin(), 0);
+	Number in1(*this); Number in2(rhs),Ans; 
+	int dd;
+	int mosP= in1.point;
+	if (in2.point > mosP) {
+		mosP = in2.point;
+		dd = mosP - in1.point;
+		for (int i = 0; i < dd;i++) {
+			in1.pushLeft();	
 		}
+		in1.point = mosP;
 	}
 	else
 	{
-		for (int i = 0; i < abs(point - rhs.point); i++)
-		{
-			in2.insert(in2.begin(), 0);
+		dd = mosP - in2.point;
+		for (int i = 0; i < dd; i++) {
+			in2.pushLeft();
 		}
+		in2.point = mosP;
 	}
-	int max = in1.size();
-	if (in2.size() > in1.size()) {
-		max = in2.size();
+
+	int max = in1.bigNum.size();
+	if (in2.bigNum.size() > in1.bigNum.size()) {
+		max = in2.bigNum.size();
 	}
+
 	int x, y, buf = 0, sum = 0;
 
-	ans.resize(max);
-
+	Ans.bigNum.resize(max);
 	for (int i = 0; i < max; i++) {
-
-		if (i > in1.size() - 1)
+		if (i > in1.bigNum.size() - 1)
 		{
 			x = 0;
 		}
 		else
 		{
-			x = in1.at(i);
-			if (negative) {
-				x = in1.at(i) * -1;
+			x = in1.bigNum.at(i);
+			if (in1.negative) {
+				x = x * -1;
 			}
 		}
-		if (i > in2.size() - 1)
+		if (i > in2.bigNum.size() - 1)
 		{
 			y = 0;
 		}
 		else
 		{
-			y = in2.at(i);
-			if (rhs.negative) {
-				y = in2.at(i) * -1;
+			y = in2.bigNum.at(i);
+			if (in2.negative) {
+				y = y * -1;
 			}
 		}
-
-		sum = x + y + buf;
-		buf = 0;
-		if (sum == 0 && i == in1.size() - 1 && in1.size() == in2.size()) {
-			break;
-		}
-		ans.at(i) = sum;
-
-
+		sum = x + y;
+		Ans.bigNum.at(i) = sum;
+	
 	}
-	Number co(rhs);
+	
+	Ans.clearZero();//只有一味的時候可能出錯
+	Ans.pushRight();
 
-
-
-	co.bigNum = ans;
-	co.point = mosP;
-
-	vector<int> input(co.bigNum.size() + 1);
-	int num, plus = 0;
-	for (int i = 0; i < input.size(); i++)
+	sum = 0;
+	for (int i = 0; i < Ans.bigNum.size(); i++)
 	{
-		if (i < co.bigNum.size()) {
-			num = co.bigNum.at(i);
-		}
-		else
-		{
-			num = 0;
-		}
-		num = num + plus;
-		if (i > co.bigNum.size() && plus == 0) {
-			break;
-		}
-		plus = 0;
-		if (num > 9) {
-			while (num > 9)
+		sum = Ans.bigNum.at(i);
+		sum = sum + buf;
+		buf= 0;
+		if (sum > 9) {
+			while (sum > 9)
 			{
-				num = num - 10;
-				plus = +1;
+				sum = sum - 10;
+				buf = buf + 1;
 			}
 		}
-		else if (num < -9)
+		else if (sum < -9)
 		{
-			num = num + 10;
-			plus = plus - 1;
+			sum = sum + 10;
+			buf = buf - 1;
 
 		}
-		input.at(i) = num;
+		Ans.bigNum.at(i) = sum;
 	}
+
+
 	int time = 0;
-	while (input.at(input.size() - 1 - time) == 0 && time > input.size())
+	for (int i = 0; i < Ans.bigNum.size(); i++)
 	{
-		time++;
+		time = Ans.bigNum.at(Ans.bigNum.size() - i - 1);
+		if (time !=0) {
+		
+			break;
+		}
 	}
-	bool sign = input.at(input.size() - 1 - time) > 0;
-	co.negative = true;
-	if (sign) {
-		co.negative = false;
-	}
-	buf = 0;
-	for (int i = 0; i < input.size(); i++) {
-		input.at(i) = input.at(i) + buf;
-		buf = 0;
-		if (input.at(i) == 0) {
+
+	Ans.negative = time < 0;
+	if(time !=0){
+
+	buf = 0; 
+	Ans.pushRight();
+
+	for (int i = 0; i < Ans.bigNum.size(); i++) {
+		if (Ans.bigNum.at(i) == 0) {
 
 		}
-		else if (input.at(i) > 0 != sign) {
-			if (sign) {
-				while (input.at(i) < 0)
+		else if (Ans.bigNum.at(i) <0 != Ans.negative)
+		{
+
+			if (!negative) {
+				while (Ans.bigNum.at(i) > 0)
 				{
-					input.at(i) = input.at(i) + 10;
-					buf = -1;
+					Ans.bigNum.at(i) = Ans.bigNum.at(i) - 10;
+					buf = 1;
 				}
 			}
 			else
 			{
-				while (input.at(i) > 0)
+				while (Ans.bigNum.at(i) < 0)
 				{
-					input.at(i) = input.at(i) - 10;
-					buf = 1;
+					Ans.bigNum.at(i) = Ans.bigNum.at(i) + 10;
+					buf = -1;
 				}
+				
 			}
+
+			Ans.bigNum.at(i) = abs(Ans.bigNum.at(i));
+
 		}
-		input.at(i) = abs(input.at(i));
+		Ans.bigNum.at(i) = abs(Ans.bigNum.at(i));
+	}
 	}
 
-	co.bigNum = input;
-	co.clearZero();
-
-	return co;
+	Ans.point = mosP;
+	Ans.clearZero();
+	return Ans;
 }
 
 Number Number::operator-(const Number& rhs)
 {
-	Number num1(*this); Number num2(rhs);
-	num2.negative = (!num2.negative);
-	Number abs = num1 + num2;
+	Number a(*this); Number b(rhs);
+	b.negative = !b.negative;
 
 
-
-	return abs;
+	return a+b;
 }
 
 Number Number::operator*(const Number& rhs)
@@ -513,7 +502,7 @@ ostream& operator<<(ostream& os, const Number& rhs)
 		//error
 		return os;
 	}
-	if (rhs.negative && !rhs.isZero())
+	if (rhs.negative && !rhs.isZero())//這裡有問提
 		os << "-";
 	for (int i = rhs.bigNum.size() - 1; i >= 0; i--) {
 		os << rhs.bigNum[i];
@@ -530,9 +519,9 @@ ostream& operator<<(ostream& os, const Number& rhs)
 
 istream& operator>>(istream& is, Number& rhs)
 {
-	string temp;
-	is >> temp;
-	rhs = temp;
+	//string temp;
+	//is >> temp;
+	//rhs = temp;
 	return is;
 }
 

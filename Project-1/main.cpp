@@ -7,8 +7,8 @@ using namespace std;
 
 int main()
 {
-	string input = "10";
-	Number num1 = "-10", num2(input);
+	string input = "-5";
+	Number num1 = "8", num2(input);
 	try
 	{
 		cout << "num1: " << num1 << endl;
@@ -16,7 +16,7 @@ int main()
 		cout << "+: " << num1 + num2 << endl;
 		cout << "-: " << num1 - num2 << endl;
 		cout << "*: " << num1 * num2 << endl;
-		cout << "/: " << num1 / num2 << endl;
+		//cout << "/: " << num1 / num2 << endl;
 
 	}
 	catch (const char* c)
