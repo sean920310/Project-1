@@ -7,19 +7,21 @@ using namespace std;
 
 int main()
 {
-	string input = "123456.123";
-	Number num1 = "123456.01", num2(input);
-	
-	//num2 = num1 * num2;
+	string input = "123.123";
+	Number num1 = "100.1", num2(input);
 	try
 	{
-		cout << (num2<num1) << endl;
-		cout << num2 << endl;// << num1 << endl;
+		cout << "num1: " << num1 << endl;
+		cout << "num2: " << num2 << endl;
+		cout << "+: " << num1 + num2 << endl;
+		cout << "-: " << num1 - num2 << endl;
+		cout << "*: " << num1 * num2 << endl;
+		cout << "/: " << num1 / num2 << endl;
 
 	}
 	catch (const char* c)
 	{
 		cout << c;
 	}
-	
+
 }
