@@ -53,7 +53,7 @@ Decimal::Decimal(string in) {
 
 	for (int i = 0; i < bufV.length(); i++)
 	{
-		NumV.at(i) = (bufV[i] - '0') * sign;
+		NumV.at(i) = (bufV[i] - '0');
 	}
 }
 

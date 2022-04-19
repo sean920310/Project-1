@@ -8,10 +8,10 @@ using namespace std;
 class Decimal
 {
 public:
-	Decimal();
-	Decimal(string input);
+	Decimal();//
+	Decimal(string input);//
 	Decimal(vector<int> NumV, int point);
-	void Plus(Decimal& a);
+	void Plus(Decimal& a);//
 	void Time(Decimal& a);
 
 
@@ -20,7 +20,7 @@ public:
 
 	Decimal operator + (const Decimal& a);
 
-	vector<int> fixe(vector<int> in, int gustplus);
+	vector<int> fixe(vector<int> in, int gustplus);//
 	void watch(vector<int> NumV);
 	void watch();
 

@@ -19,6 +19,7 @@ public:
 	Number();
 	Number(const string& rhs);
 	Number(const Number& rhs);
+	Number(const char* rhs);
 
 	void factorial();
 
