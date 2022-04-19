@@ -218,7 +218,7 @@ Number Number::operator+(const Number& rhs)
 	
 	}
 	
-	Ans.clearZero();//只有一味的時候可能出錯
+	//Ans.clearZero();//好像需要跟改some bug
 	Ans.pushRight();
 
 	sum = 0;
