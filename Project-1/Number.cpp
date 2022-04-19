@@ -140,7 +140,7 @@ Number Number::operator+(const Number& rhs)
 		{
 			x = in1.at(i);
 			if (negative) {
-
+				x = in1.at(i) * -1;
 			}
 		}
 		if (i > in2.size() - 1)
@@ -150,8 +150,8 @@ Number Number::operator+(const Number& rhs)
 		else
 		{
 			y = in2.at(i);
-			if (in2.negative) {
-
+			if (rhs.negative) {
+			y = in2.at(i) * -1;
 			}
 		}
 
@@ -164,6 +164,48 @@ Number Number::operator+(const Number& rhs)
 
 
 	}
+
+	//plus or not
+
+	vector<int> input(ans.size() + 1);
+
+	int num, plus = 0;
+	for (int i = 0; i < input.size(); i++)
+	{
+		if (i < ans.size()) {
+			num = ans.at(i);
+		}
+		else
+		{
+			num = 0;
+		}
+		num = num + plus;
+		if (i > in.size() && plus == 0) {
+			break;
+		}
+		plus = 0;
+		if (num > 9) {
+			while (num > 9)
+			{
+				num = num - 10;
+				plus = +1;
+			}
+		}
+		else if (num < -9)
+		{
+			num = num + 10;
+			plus = plus - 1;
+
+		}
+		input.at(i) = num;
+	}
+
+	int time = 0;
+	while (input.at(input.size() - 1 - time) == 0)
+	{
+		time++;
+	}
+
 
 
 
