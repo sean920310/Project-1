@@ -18,7 +18,9 @@ void Number::clearZero()
 
 bool Number::isZero() const
 {
-	return false;
+	Number num(*this);
+	num.clearZero();
+	return (num.bigNum.size() == 1 && num.bigNum[1] == 0);
 }
 
 void Number::pushLeft()
@@ -206,7 +208,7 @@ Number Number::operator+(const Number& rhs)
 		{
 			y = in2.at(i);
 			if (rhs.negative) {
-			y = in2.at(i) * -1;
+				y = in2.at(i) * -1;
 			}
 		}
 
@@ -225,7 +227,7 @@ Number Number::operator+(const Number& rhs)
 
 	co.bigNum = ans;
 	co.point = mosP;
-	
+
 	vector<int> input(co.bigNum.size() + 1);
 	int num, plus = 0;
 	for (int i = 0; i < input.size(); i++)
@@ -305,7 +307,7 @@ Number Number::operator-(const Number& rhs)
 	Number num1(*this); Number num2(rhs);
 	num2.negative = (!num2.negative);
 	Number abs = num1 + num2;
-	
+
 
 
 	return abs;
@@ -343,7 +345,7 @@ Number Number::operator/(const Number& rhs)
 	num2.clearZero();
 
 	if (num2.isZero()) {
-		result.bigNum = {};
+		result.bigNum = { 0 };
 		throw "埃计ぃ0";
 		return result;
 	}
@@ -352,23 +354,37 @@ Number Number::operator/(const Number& rhs)
 		num1.negative = false;
 		num2.negative = false;
 		origin.negative = false;
-		if (num1 < num2) {
-			result.bigNum = { 0 };
-			return result;
-		}
+
 		int time = 0;
-		while (num2 < num1 || num2 == num1)
-		{
-			num2.bigNum.insert(num2.bigNum.begin(), 0);//10
+		if (num1 < num2) {
+			while (num1 < num2 || num1 == num2)
+			{
+				num2.bigNum.push_back(0);
+				num2.point++;				//埃10
+				time--;
+			}
+			num2.bigNum.pop_back();			
+			num2.point--;					//10
 			time++;
 		}
-		num2.bigNum.erase(num2.bigNum.begin());//埃10
-		time--;
+		else {
+			while (num1 > num2 || num2 == num1)
+			{
+				num2.bigNum.insert(num2.bigNum.begin(), 0);//10
+				num2.point--;
+				if (num2.point < 0)
+					num2.point = 0;		//point 程0
+				time++;
+			}
+			num2.bigNum.erase(num2.bigNum.begin());//埃10
+			time--;
+		}
 
-		while (num1 > origin || num1 == origin)
+		int count = 0;
+		while (!num1.isZero()&&count<=100)
 		{
 			int n = 0;
-			while (num2 < num1 || num2 == num1)
+			while (num1 > num2 || num2 == num1)
 			{
 				num1 = num1 - num2;
 				n++;
@@ -376,11 +392,21 @@ Number Number::operator/(const Number& rhs)
 			Number temp;
 			temp.negative = result.negative;
 			temp.bigNum[0] = n;
-			for (int i = 0; i < time; i++) {
-				temp.bigNum.insert(temp.bigNum.begin(), 0);
+			if (time >= 0) {
+				for (int i = 0; i < time; i++) {
+					temp.bigNum.insert(temp.bigNum.begin(), 0);
+				}
+			}
+			else
+			{
+				for (int i = time; i < 0; i++) {
+					temp.bigNum.push_back(0);
+					temp.point++;
+				}
 			}
 			result = result + temp;
-			num2.bigNum.erase(num2.bigNum.begin());//埃10
+			num2.bigNum.push_back(0);//埃10
+			num2.point++;
 			time--;
 		}
 	}
@@ -396,18 +422,23 @@ Number Number::operator^(const Number& rhs)
 
 bool Number::operator==(const Number& rhs) const
 {
-	return (this->bigNum == rhs.bigNum && this->negative == rhs.negative && this->point == rhs.point);
+	Number num1(*this), num2(rhs);
+	num1.clearZero();
+	num2.clearZero();
+	return (num1.bigNum == num2.bigNum && num1.negative == num2.negative && num1.point == num2.point);
 }
 
 bool Number::operator<(const Number& rhs) const
 {
+	Number num1(*this), num2(rhs);
+	num1.clearZero();
+	num2.clearZero();
 	if (this->negative != rhs.negative)
 		return this->negative;							//オ娩琌璽计娩琌タ计
-	else if (this->bigNum.size() - this->point != rhs.bigNum.size() - rhs.point)
-		return (this->bigNum.size() - this->point < rhs.bigNum.size() - rhs.point); //俱计ぃ
+	else if (num1.bigNum.size() - num1.point != num2.bigNum.size() - num2.point)
+		return (num1.bigNum.size() - num1.point < num2.bigNum.size() - num2.point); //俱计ぃ
 	else
 	{
-		Number num1(*this), num2(rhs);
 		if (num1.point > num2.point) {		//干霍计翴计
 			for (int i = num1.point - num2.point; i > 0; i--)
 				num2.pushLeft();
@@ -437,13 +468,15 @@ bool Number::operator<(const Number& rhs) const
 
 bool Number::operator>(const Number& rhs) const
 {
+	Number num1(*this), num2(rhs);
+	num1.clearZero();
+	num2.clearZero();
 	if (this->negative != rhs.negative)
 		return !(this->negative);							//オ娩琌璽计娩琌タ计
-	else if (this->bigNum.size() - this->point != rhs.bigNum.size() - rhs.point)
-		return (this->bigNum.size() - this->point > rhs.bigNum.size() - rhs.point); //俱计ぃ
+	else if (num1.bigNum.size() - num1.point != num2.bigNum.size() - num2.point)
+		return (num1.bigNum.size() - num1.point > num2.bigNum.size() - num2.point); //俱计ぃ
 	else
 	{
-		Number num1(*this), num2(rhs);
 		if (num1.point > num2.point) {		//干霍计翴计
 			for (int i = num1.point - num2.point; i > 0; i--)
 				num2.pushLeft();
