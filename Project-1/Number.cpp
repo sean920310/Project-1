@@ -2,6 +2,18 @@
 
 void Number::clearZero()
 {
+	for (int i = this->bigNum.size() - 1; i > point; i--) {
+		if (this->bigNum[i])
+			break;
+		this->bigNum.pop_back();
+	}
+	while (point)
+	{
+		if (this->bigNum[0])
+			break;
+		this->bigNum.erase(this->bigNum.begin());
+		this->point--;
+	}
 }
 
 bool Number::isZero() const
@@ -101,6 +113,39 @@ Number::Number(const char* rhs)
 
 void Number::factorial()
 {
+	this->clearZero();
+	if (this->point) {
+		throw "階乘不能有小數";
+		return;
+	}
+
+	if (this->bigNum.size() == 1 && (this->bigNum[0] == 1 || this->bigNum[0] == 2))
+		return;
+	else if (this->bigNum.size() == 1 && this->bigNum[0] == 0) {
+		this->bigNum[0] = 1;
+		return;
+	}
+	else {
+		unsigned int num = 0, carry = 0, temp;
+		for (int i = this->bigNum.size() - 1; i >= 0; i--) {
+			num = num * 10 + this->bigNum[i];
+		}
+
+		for (unsigned int i = num - 1; i >= 2; i--) {
+			for (int j = 0; j < this->bigNum.size(); j++) {
+				temp = bigNum[j] * i + carry;
+				bigNum[j] = temp % 10;
+				carry = temp / 10;
+			}
+			while (carry)
+			{
+				bigNum.push_back(carry % 10);
+				carry /= 10;
+			}
+		}
+	}
+	this->clearZero();
+	return;
 }
 
 Number& Number::operator=(const Number& rhs)
@@ -220,7 +265,26 @@ Number Number::operator-(const Number& rhs)
 
 Number Number::operator*(const Number& rhs)
 {
-	return Number();
+	Number num1(*this), num2(rhs), result;
+	vector<int> tempNum(num1.bigNum.size() + num2.bigNum.size(), 0);
+	result.bigNum = tempNum;
+	result.negative = !(num1.negative == num2.negative);
+
+	for (int i = 0; i < num1.bigNum.size(); i++) {
+		for (int j = 0; j < num2.bigNum.size(); j++) {
+			result.bigNum[i + j] += num1.bigNum[i] * num2.bigNum[j];
+		}
+	}
+	int carry = 0;
+	for (int i = 0; i < result.bigNum.size(); i++) {
+		int temp = result.bigNum[i] + carry;
+		result.bigNum[i] = temp % 10;
+		carry = temp / 10;
+	}
+
+	result.point = num1.point + num2.point;
+	result.clearZero();
+	return result;
 }
 
 Number Number::operator/(const Number& rhs)
