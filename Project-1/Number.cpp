@@ -192,7 +192,56 @@ Number Number::operator*(const Number& rhs)
 
 Number Number::operator/(const Number& rhs)
 {
-	return Number();
+	Number num1(*this), num2(rhs), origin(rhs), result;
+	result.negative = !(num1.negative == num2.negative);
+	num1.clearZero();
+	num2.clearZero();
+
+	if (num2.isZero()) {
+		result.bigNum = {};
+		throw "除數不能為0";
+		return result;
+	}
+	else
+	{
+		num1.negative = false;
+		num2.negative = false;
+		origin.negative = false;
+		if (num1 < num2) {
+			result.bigNum = { 0 };
+			return result;
+		}
+		int time = 0;
+		while (num2 < num1 || num2 == num1)
+		{
+			num2.bigNum.insert(num2.bigNum.begin(), 0);//乘10
+			time++;
+		}
+		num2.bigNum.erase(num2.bigNum.begin());//除10
+		time--;
+
+		while (num1 > origin || num1 == origin)
+		{
+			int n = 0;
+			while (num2 < num1 || num2 == num1)
+			{
+				num1 = num1 - num2;
+				n++;
+			}
+			Number temp;
+			temp.negative = result.negative;
+			temp.bigNum[0] = n;
+			for (int i = 0; i < time; i++) {
+				temp.bigNum.insert(temp.bigNum.begin(), 0);
+			}
+			result = result + temp;
+			num2.bigNum.erase(num2.bigNum.begin());//除10
+			time--;
+		}
+	}
+
+	result.clearZero();
+	return result;
 }
 
 Number Number::operator^(const Number& rhs)
@@ -291,6 +340,9 @@ ostream& operator<<(ostream& os, const Number& rhs)
 			if (rhs.point == i)
 				os << '.';
 		}
+	}
+	if (rhs.point) {
+
 	}
 	return os;
 }
