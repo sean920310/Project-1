@@ -13,8 +13,9 @@ protected:
 
 	void clearZero();
 	bool isZero() const;
-	void pushLeft();	//计翴干0
+	void pushLeft();	//计翴干0
 	void pushRight();	//俱计玡干0
+	
 public:
 	Number();
 	Number(const string& rhs);

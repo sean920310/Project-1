@@ -27,6 +27,8 @@ void Number::pushLeft()
 	point++;
 }
 
+
+
 void Number::pushRight()
 {
 	bigNum.push_back(0);
@@ -158,12 +160,155 @@ Number& Number::operator=(const Number& rhs)
 
 Number Number::operator+(const Number& rhs)
 {
-	return Number();
+
+	vector<int> in1 = bigNum;
+	vector<int> in2 = rhs.bigNum;
+	vector<int> ans;
+
+	int mosP = point;
+	if (rhs.point > mosP) {
+		mosP = rhs.point;
+		for (int i = 0; i < abs(point - rhs.point); i++)
+		{
+			in1.insert(in1.begin(), 0);
+		}
+	}
+	else
+	{
+		in2.insert(in2.begin(), 0);
+	}
+	int max = in1.size();
+	if (in2.size() > in1.size()) {
+		max = in2.size();
+	}
+	int x, y, buf = 0, sum = 0;
+
+	ans.resize(max);
+
+	for (int i = 0; i < max; i++) {
+
+		if (i > in1.size() - 1)
+		{
+			x = 0;
+		}
+		else
+		{
+			x = in1.at(i);
+			if (negative) {
+				x = in1.at(i) * -1;
+			}
+		}
+		if (i > in2.size() - 1)
+		{
+			y = 0;
+		}
+		else
+		{
+			y = in2.at(i);
+			if (rhs.negative) {
+			y = in2.at(i) * -1;
+			}
+		}
+
+		sum = x + y + buf;
+		buf = 0;
+		if (sum == 0 && i == in1.size() - 1 && in1.size() == in2.size()) {
+			break;
+		}
+		ans.at(i) = sum;
+
+
+	}
+	Number co(rhs);
+
+
+
+	co.bigNum = ans;
+	co.point = mosP;
+	
+	vector<int> input(co.bigNum.size() + 1);
+	int num, plus = 0;
+	for (int i = 0; i < input.size(); i++)
+	{
+		if (i < co.bigNum.size()) {
+			num = co.bigNum.at(i);
+		}
+		else
+		{
+			num = 0;
+		}
+		num = num + plus;
+		if (i > co.bigNum.size() && plus == 0) {
+			break;
+		}
+		plus = 0;
+		if (num > 9) {
+			while (num > 9)
+			{
+				num = num - 10;
+				plus = +1;
+			}
+		}
+		else if (num < -9)
+		{
+			num = num + 10;
+			plus = plus - 1;
+
+		}
+		input.at(i) = num;
+	}
+	int time = 0;
+	while (input.at(input.size() - 1 - time) == 0)
+	{
+		time++;
+	}
+	bool sign = input.at(input.size() - 1 - time) > 0;
+	if (sign) {
+
+		co.negative = false;
+	}
+	buf = 0;
+	for (int i = 0; i < input.size(); i++) {
+		input.at(i) = input.at(i) + buf;
+		buf = 0;
+		if (input.at(i) == 0) {
+
+		}
+		else if (input.at(i) > 0 != sign) {
+			if (sign) {
+				while (input.at(i) < 0)
+				{
+					input.at(i) = input.at(i) + 10;
+					buf = -1;
+				}
+			}
+			else
+			{
+				while (input.at(i) > 0)
+				{
+					input.at(i) = input.at(i) - 10;
+					buf = 1;
+				}
+			}
+		}
+		input.at(i) = abs(input.at(i));
+	}
+
+	co.bigNum = input;
+	co.clearZero();
+
+	return co;
 }
 
 Number Number::operator-(const Number& rhs)
 {
-	return Number();
+	Number num1(*this); Number num2(rhs);
+	num2.negative = (!num2.negative);
+	Number abs = num1 + num2;
+	
+
+
+	return abs;
 }
 
 Number Number::operator*(const Number& rhs)
@@ -354,3 +499,7 @@ istream& operator>>(istream& is, Number& rhs)
 	rhs = temp;
 	return is;
 }
+
+
+
+
