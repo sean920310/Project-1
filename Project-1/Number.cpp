@@ -88,6 +88,61 @@ Number& Number::operator=(const Number& rhs)
 
 Number Number::operator+(const Number& rhs)
 {
+	int mosP = point;
+	if (rhs.point > mosP) {
+		mosP = rhs.point;
+	}
+
+	vector<int> in1 = bigNum;
+	vector<int> in2 = rhs.bigNum;
+	vector<int> ans;
+
+	int max = in1.size();
+	if (in2.size() > in1.size()) {
+		max = in2.size();
+	}
+	int x, y, buf = 0, sum = 0;
+
+	ans.resize(max);
+
+	for (int i = 0; i < max; i++) {
+
+		if (i > in1.size() - 1)
+		{
+			x = 0;
+		}
+		else
+		{
+			x = in1.at(i);
+			if (negative) {
+
+			}
+		}
+		if (i > in2.size() - 1)
+		{
+			y = 0;
+		}
+		else
+		{
+			y = in2.at(i);
+			if (in2.negative) {
+
+			}
+		}
+
+		sum = x + y + buf;
+		buf = 0;
+		if (sum == 0 && i == in1.size() - 1 && in1.size() == in2.size()) {
+			break;
+		}
+		ans.at(i) = sum;
+
+
+	}
+
+
+
+
 	return Number();
 }
 
