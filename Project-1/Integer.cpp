@@ -290,8 +290,8 @@ Integer Integer::operator/(const Integer& rhs)
 	num2.clearZero();
 	
 	if (num2.isZero()) {
-		cout << "被除數不能為0";
 		result.bigNum = {};
+		throw "除數不能為0";
 		return result;
 	}
 	else
