@@ -142,10 +142,12 @@
     <ClCompile Include="Decimal.cpp" />
     <ClCompile Include="Integer.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Number.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Decimal.h" />
     <ClInclude Include="Integer.h" />
+    <ClInclude Include="Number.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="CPP程式設計題-大數計算機.pdf" />
