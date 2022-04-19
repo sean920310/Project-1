@@ -7,8 +7,8 @@ using namespace std;
 
 int main()
 {
-	string input = "123.123";
-	Number num1 = "100.1", num2(input);
+	string input = "-123.123";
+	Number num1 = "-100.1", num2(input);
 	try
 	{
 		cout << "num1: " << num1 << endl;
