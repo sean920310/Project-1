@@ -219,8 +219,7 @@ Number Number::operator+(const Number& rhs)
 		Ans.bigNum.at(i) = sum;
 	
 	}
-	
-	//Ans.clearZero();//好像point 會有點bug
+	//clea
 	Ans.pushRight();
 
 	sum = 0;
@@ -242,6 +241,7 @@ Number Number::operator+(const Number& rhs)
 			buf = buf - 1;
 
 		}
+		
 		Ans.bigNum.at(i) = sum;
 	}
 
@@ -249,48 +249,45 @@ Number Number::operator+(const Number& rhs)
 	int time = 0;
 	for (int i = 0; i < Ans.bigNum.size(); i++)
 	{
-		time = Ans.bigNum.at(Ans.bigNum.size() - i - 1);
+		time = Ans.bigNum.at(Ans.bigNum.size()-i-1);
 		if (time !=0) {
 		
 			break;
 		}
 	}
-
 	Ans.negative = time < 0;
 	if(time !=0){
 
-	buf = 0; 
-	Ans.pushRight();
+		buf = 0; 
+		Ans.pushRight();
 
-	for (int i = 0; i < Ans.bigNum.size(); i++) {
-		if (Ans.bigNum.at(i) == 0) {
+		for (int i = 0; i < Ans.bigNum.size(); i++) {
+			Ans.bigNum.at(i) = Ans.bigNum.at(i) + buf;
+			buf = 0;
+			if (Ans.bigNum.at(i) == 0) {
 
-		}
-		else if (Ans.bigNum.at(i) <0 != Ans.negative)
-		{
-
-			if (!negative) {
-				while (Ans.bigNum.at(i) > 0)
-				{
-					Ans.bigNum.at(i) = Ans.bigNum.at(i) - 10;
-					buf = 1;
-				}
 			}
-			else
-			{
-				while (Ans.bigNum.at(i) < 0)
-				{
-					Ans.bigNum.at(i) = Ans.bigNum.at(i) + 10;
-					buf = -1;
+			else if (Ans.bigNum.at(i) > 0 != !Ans.negative) {
+				if (!Ans.negative) {
+					while (Ans.bigNum.at(i) < 0)
+					{
+						Ans.bigNum.at(i) = Ans.bigNum.at(i) + 10;
+						buf = buf -1;
+					}
 				}
-				
-			}
+				else
+				{
+					while (Ans.bigNum.at(i) > 0)
+					{
+						Ans.bigNum.at(i) = Ans.bigNum.at(i) - 10;
+						buf = buf + 1;
+					}
+				}
 
+			}
 			Ans.bigNum.at(i) = abs(Ans.bigNum.at(i));
-
 		}
-		Ans.bigNum.at(i) = abs(Ans.bigNum.at(i));
-	}
+	
 	}
 
 	Ans.point = mosP;
