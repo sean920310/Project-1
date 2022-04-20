@@ -14,13 +14,15 @@ void Number::clearZero()
 		this->bigNum.erase(this->bigNum.begin());
 		this->point--;
 	}
+	if (this->bigNum.size() == 1 && this->bigNum[0] == 0)
+		this->negative = false;
 }
 
 bool Number::isZero() const
 {
 	Number num(*this);
 	num.clearZero();
-	return (num.bigNum.size() == 1 && num.bigNum[num.bigNum.size()-1] == 0);//哭阿然是這裡笑死
+	return (num.bigNum.size() == 1 && num.bigNum[0] == 0);
 }
 
 void Number::pushLeft()
