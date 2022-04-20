@@ -31,12 +31,12 @@ void Number::pushLeft()
 	point++;
 }
 
-
-
 void Number::pushRight()
 {
 	bigNum.push_back(0);
 }
+
+//=====================================****constructor****==========================================
 
 Number::Number()
 {
@@ -116,6 +116,8 @@ Number::Number(const char* rhs)
 	Number newNum = temp;
 	*this = newNum;
 }
+
+//=====================================****計算****==========================================
 
 void Number::factorial()
 {
@@ -330,8 +332,8 @@ Number Number::operator*(const Number& rhs)
 
 Number Number::operator/(const Number& rhs)
 {
-	Number num1(*this), num2(rhs), origin(rhs), result;
-	result.negative = !(num1.negative == num2.negative);
+	Number num1(*this), num2(rhs), result;
+	result.negative = !(num1.negative == num2.negative);		
 	num1.clearZero();
 	num2.clearZero();
 
@@ -340,11 +342,15 @@ Number Number::operator/(const Number& rhs)
 		throw "除數不能為0";
 		return result;
 	}
+	else if (num1.isZero()) {
+		result.bigNum = { 0 };
+		return result;
+	}
+
 	else
 	{
 		num1.negative = false;
 		num2.negative = false;
-		origin.negative = false;
 
 		int time = 0;
 		if (num1 < num2) {
@@ -362,16 +368,13 @@ Number Number::operator/(const Number& rhs)
 			while (num1 > num2 || num2 == num1)
 			{
 				num2.bigNum.insert(num2.bigNum.begin(), 0);//乘10
-				num2.point--;
-				if (num2.point < 0)
-					num2.point = 0;		//point 最小為0
 				time++;
 			}
 			num2.bigNum.erase(num2.bigNum.begin());//除10
 			time--;
 		}
 
-		int count = 0;
+		int count = point;
 		while (!num1.isZero() && count <= 100)
 		{
 			int n = 0;
@@ -399,6 +402,7 @@ Number Number::operator/(const Number& rhs)
 			num2.bigNum.push_back(0);//除10
 			num2.point++;
 			time--;
+			count++;
 		}
 	}
 
@@ -408,8 +412,11 @@ Number Number::operator/(const Number& rhs)
 
 Number Number::operator^(const Number& rhs)
 {
+	
 	return Number();
 }
+
+//=====================================****判斷式****==========================================
 
 bool Number::operator==(const Number& rhs) const
 {
@@ -495,13 +502,11 @@ bool Number::operator>(const Number& rhs) const
 	return false;
 }
 
+//=====================================****輸入輸出****==========================================
+
 ostream& operator<<(ostream& os, const Number& rhs)
 {
-	if (!rhs.bigNum.size()) {
-		//error
-		return os;
-	}
-	if (rhs.negative && !rhs.isZero())//這裡有問提
+	if (rhs.negative && !rhs.isZero())
 		os << "-";
 	for (int i = rhs.bigNum.size() - 1; i >= 0; i--) {
 		os << rhs.bigNum[i];
@@ -510,17 +515,14 @@ ostream& operator<<(ostream& os, const Number& rhs)
 				os << '.';
 		}
 	}
-	if (rhs.point) {
-
-	}
 	return os;
 }
 
 istream& operator>>(istream& is, Number& rhs)
 {
-	//string temp;
-	//is >> temp;
-	//rhs = temp;
+	string temp;
+	is >> temp;
+	rhs = temp;
 	return is;
 }
 

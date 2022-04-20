@@ -1,36 +1,35 @@
 #pragma once
-#include <vector>
-#include <string>
-#include <iostream>
-using namespace std;
+class Decimal;
+#include "Number.h"
+#include "Decimal.h"
 
-class Integer
+class Integer: public Number
 {
-private:
-	vector<int> bigNum;
-	bool negative = false;
-	void clearZero();
-	bool isZero() const;
+protected:
+	void toInteger();
 public:
 	Integer();
+	Integer(const Number& rhs);
 	Integer(const Integer& rhs);
 	Integer(const string& rhs);
 	Integer(const char* rhs);
 
-	void factorial();
-	
 	Integer& operator=(const Integer& rhs);
 	Integer& operator=(const char* rhs);
 	Integer& operator=(const string& rhs);
+
 	Integer operator+(const Integer& rhs);
 	Integer operator-(const Integer& rhs);
 	Integer operator*(const Integer& rhs);
 	Integer operator/(const Integer& rhs);
 	Integer operator^(const Integer& rhs);
 
-	bool operator==(const Integer& rhs) const;
-	bool operator<(const Integer& rhs) const;
-	bool operator>(const Integer& rhs) const;
+	friend Decimal operator+(Integer lhs, Decimal rhs);
+	friend Decimal operator-(Integer lhs, Decimal rhs);
+	friend Decimal operator*(Integer lhs, Decimal rhs);
+	friend Decimal operator/(Integer lhs, Decimal rhs);
+	friend Decimal operator^(Integer lhs, Decimal rhs);
+
 	
 	friend ostream& operator<<(ostream& os, const Integer& rhs);
 	friend istream& operator>>(istream& is, Integer& rhs);

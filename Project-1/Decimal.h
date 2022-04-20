@@ -1,39 +1,36 @@
 #pragma once
-#include<vector>
-#include<string>
-#include <iostream>
-#include <algorithm>
-using namespace std;
+class Integer;
+#include "Number.h"
+#include "Integer.h"
 
-class Decimal
+
+class Decimal:public Number
 {
 public:
-	Decimal();//
-	Decimal(string input);//
-	Decimal(vector<int> NumV, int point);
-	void Plus(Decimal& a);//
-	void Time(Decimal& a);
+	Decimal();
+	Decimal(const Number& rhs);
+	Decimal(const Decimal& rhs);
+	Decimal(const string& rhs);
+	Decimal(const char* rhs);
 
+	Decimal& operator=(const Decimal& rhs);
+	Decimal& operator=(const char* rhs);
+	Decimal& operator=(const string& rhs);
+	
+	Decimal operator+(const Integer& rhs);
+	Decimal operator-(const Integer& rhs);
+	Decimal operator*(const Integer& rhs);
+	Decimal operator/(const Integer& rhs);
+	Decimal operator^(const Integer& rhs);
 
-	vector<int> Plus(vector<int> a, int point);
-	vector<int> time(vector<int> in, int i);
+	Decimal operator+(const Decimal& rhs);
+	Decimal operator-(const Decimal& rhs);
+	Decimal operator*(const Decimal& rhs);
+	Decimal operator/(const Decimal& rhs);
+	Decimal operator^(const Decimal& rhs);
 
-	Decimal operator + (const Decimal& a);
-
-	vector<int> fixe(vector<int> in, int gustplus);//
-	void watch(vector<int> NumV);
-	void watch();
-
-	vector<int> changePoint(vector<int>, int i);
-	vector<int> changePoint(int i);
-	vector<int>killzero(vector<int> NumV);
-	vector<int> NumV;
-private:
-
-	int sign;
-
-	int point;
-
+	friend ostream& operator<<(ostream& os, const Decimal& rhs);
+	friend istream& operator>>(istream& is, Decimal& rhs);
 };
 
 
