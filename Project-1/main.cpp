@@ -8,10 +8,9 @@ using namespace std;
 
 int main()
 {
-	string input = "10";
-	Decimal num2 = "2";
-	Decimal num1(input);
-
+	string input = "2";
+	Number num2 = "1.5";
+	Number num1(input);
 	try
 	{
 		cout << "num1: " << num1 << endl;
@@ -20,7 +19,7 @@ int main()
 		cout << "-: " << num1 - num2 << endl;
 		cout << "*: " << num1 * num2 << endl;
 		cout << "/: " << num1 / num2 << endl;
-
+		cout << "^: " << (num1 ^ num2) << endl;
 	}
 	catch (const char* c)
 	{

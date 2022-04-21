@@ -25,6 +25,7 @@ public:
 	void factorial();
 
 	Number& operator=(const Number& rhs);
+	Number& operator=(const double& rhs);
 	Number operator+(const Number& rhs);
 	Number operator-(const Number& rhs);
 	Number operator*(const Number& rhs);

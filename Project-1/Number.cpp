@@ -164,16 +164,24 @@ Number& Number::operator=(const Number& rhs)
 	return *this;
 }
 
+Number& Number::operator=(const double& rhs)
+{
+	string num = to_string(rhs);
+	Number newNum(num);
+	*this = newNum;
+	return *this;
+}
+
 Number Number::operator+(const Number& rhs)
 {
-	Number in1(*this); Number in2(rhs),Ans; 
+	Number in1(*this); Number in2(rhs), Ans;
 	int dd;
-	int mosP= in1.point;
+	int mosP = in1.point;
 	if (in2.point > mosP) {
 		mosP = in2.point;
 		dd = mosP - in1.point;
-		for (int i = 0; i < dd;i++) {
-			in1.pushLeft();	
+		for (int i = 0; i < dd; i++) {
+			in1.pushLeft();
 		}
 		in1.point = mosP;
 	}
@@ -219,7 +227,7 @@ Number Number::operator+(const Number& rhs)
 		}
 		sum = x + y;
 		Ans.bigNum.at(i) = sum;
-	
+
 	}
 	//clea
 	Ans.pushRight();
@@ -229,7 +237,7 @@ Number Number::operator+(const Number& rhs)
 	{
 		sum = Ans.bigNum.at(i);
 		sum = sum + buf;
-		buf= 0;
+		buf = 0;
 		if (sum > 9) {
 			while (sum > 9)
 			{
@@ -243,7 +251,7 @@ Number Number::operator+(const Number& rhs)
 			buf = buf - 1;
 
 		}
-		
+
 		Ans.bigNum.at(i) = sum;
 	}
 
@@ -251,16 +259,16 @@ Number Number::operator+(const Number& rhs)
 	int time = 0;
 	for (int i = 0; i < Ans.bigNum.size(); i++)
 	{
-		time = Ans.bigNum.at(Ans.bigNum.size()-i-1);
-		if (time !=0) {
-		
+		time = Ans.bigNum.at(Ans.bigNum.size() - i - 1);
+		if (time != 0) {
+
 			break;
 		}
 	}
 	Ans.negative = time < 0;
-	if(time !=0){
+	if (time != 0) {
 
-		buf = 0; 
+		buf = 0;
 		Ans.pushRight();
 
 		for (int i = 0; i < Ans.bigNum.size(); i++) {
@@ -274,7 +282,7 @@ Number Number::operator+(const Number& rhs)
 					while (Ans.bigNum.at(i) < 0)
 					{
 						Ans.bigNum.at(i) = Ans.bigNum.at(i) + 10;
-						buf = buf -1;
+						buf = buf - 1;
 					}
 				}
 				else
@@ -289,7 +297,7 @@ Number Number::operator+(const Number& rhs)
 			}
 			Ans.bigNum.at(i) = abs(Ans.bigNum.at(i));
 		}
-	
+
 	}
 
 	Ans.point = mosP;
@@ -303,7 +311,7 @@ Number Number::operator-(const Number& rhs)
 	b.negative = !b.negative;
 
 
-	return a+b;
+	return a + b;
 }
 
 Number Number::operator*(const Number& rhs)
@@ -333,7 +341,7 @@ Number Number::operator*(const Number& rhs)
 Number Number::operator/(const Number& rhs)
 {
 	Number num1(*this), num2(rhs), result;
-	result.negative = !(num1.negative == num2.negative);		
+	result.negative = !(num1.negative == num2.negative);
 	num1.clearZero();
 	num2.clearZero();
 
@@ -412,8 +420,115 @@ Number Number::operator/(const Number& rhs)
 
 Number Number::operator^(const Number& rhs)
 {
-	
-	return Number();
+	//	 中國直式開方法
+	//	 3			 __3______	<- root	
+	//	+3			| 10'23.45	<- origin		index 是兩個數字的前面那個
+	// -----		   9
+	//	 6口 <-temp	--------------
+	//	 ^			   1	<- sub
+	//	subNum
+
+	Number num1(*this), num2(rhs), result, origin, temp, root, sub, subNum, tempSubNum;
+	bool neg = num2.negative;
+	num2.negative = false;
+	num1.clearZero();
+	num2.clearZero();
+	root = 1;
+	if (num2.point) {
+		if (num2.point == 1 && num2.bigNum[0] == 5) {	//開根號
+			if (num1.negative) {
+				throw "負數不能開根號";
+				return Number();
+			}
+			origin = num1;
+			root = 0;
+			int index;
+			if (int(origin.bigNum.size() - origin.point) % 2) {	//整數是不是基數
+				sub.bigNum.insert(sub.bigNum.begin(), origin.bigNum[origin.bigNum.size() - 1]);
+				sub.clearZero();
+				index = origin.bigNum.size() - 2;
+			}
+			else
+			{
+				sub.bigNum.insert(sub.bigNum.begin(), origin.bigNum[origin.bigNum.size() - 1]);
+				sub.bigNum.insert(sub.bigNum.begin(), origin.bigNum[origin.bigNum.size() - 2]);
+				sub.clearZero();
+				index = origin.bigNum.size() - origin.point - 3;
+			}
+			bool toPoint = false;
+			while ((!sub.isZero()||!toPoint) && root.point < 100)
+			{
+				int i = 1;
+				for (; i <= 10; i++) {		//找到平方數
+					temp = i;
+					tempSubNum = subNum;
+					tempSubNum.bigNum.insert(tempSubNum.bigNum.begin(), 0);	//乘10
+					tempSubNum.clearZero();
+					tempSubNum = tempSubNum + temp;
+					if (temp * tempSubNum > sub) {
+						i--;
+						temp = i;
+						root.bigNum.insert(root.bigNum.begin(), i);
+						if (toPoint) {
+							root.point++;
+						}
+						subNum.bigNum.insert(subNum.bigNum.begin(), 0);	//乘10
+						subNum = subNum + temp;
+						subNum.clearZero();
+						break;
+					}
+				}
+				temp = i;
+				sub = sub - (temp * subNum);					//sub
+				subNum = subNum + temp;							//左邊直式結果
+				subNum.clearZero();
+				if (index-point < 0) {
+					toPoint = true;
+					origin.pushLeft();
+					origin.pushLeft();
+					index += 2;
+				}
+				sub.bigNum.insert(sub.bigNum.begin(), origin.bigNum[index]);
+				sub.bigNum.insert(sub.bigNum.begin(), origin.bigNum[index - 1]);
+				sub.clearZero();
+				index -= 2;
+			}
+			root.clearZero();
+		}
+		for (int i = num2.point; i > 0; i--) {				//清除num2小數點
+			num2.bigNum.erase(num2.bigNum.begin());
+			num2.point--;
+		}
+	}
+	result = 1;
+	temp = 2;
+	num2 = num2 / temp;
+	int n = 0;
+	while (!num2.point&&!num2.isZero())			//num2是奇數
+	{
+		n++;
+		num2 = num2 / temp;
+	}
+	num2 = num2 * temp;
+	while (!num2.isZero())
+	{
+		result = result * num1;
+		temp = 1;
+		num2 = num2 - temp;
+	}
+	for (int i = 0; i < n; i++) {
+		result = result * result;
+	}
+	result = result * root;
+
+	if (neg) {
+		temp = 1;
+		if (!result.isZero()) {
+			result = temp / result;
+		}
+	}
+	result.clearZero();
+	return result;
 }
 
 //=====================================****判斷式****==========================================
