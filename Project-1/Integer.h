@@ -1,7 +1,7 @@
 #pragma once
-class Decimal;
 #include "Number.h"
-#include "Decimal.h"
+
+class Decimal;
 
 class Integer: public Number
 {
@@ -12,11 +12,13 @@ public:
 	Integer(const Number& rhs);
 	Integer(const Integer& rhs);
 	Integer(const string& rhs);
+	Integer(const double& rhs);
 	Integer(const char* rhs);
 
 	Integer& operator=(const Integer& rhs);
 	Integer& operator=(const char* rhs);
 	Integer& operator=(const string& rhs);
+	Integer& operator=(const double& rhs);
 
 	Integer operator+(const Integer& rhs);
 	Integer operator-(const Integer& rhs);
@@ -24,13 +26,7 @@ public:
 	Integer operator/(const Integer& rhs);
 	Integer operator^(const Integer& rhs);
 
-	friend Decimal operator+(Integer lhs, Decimal rhs);
-	friend Decimal operator-(Integer lhs, Decimal rhs);
-	friend Decimal operator*(Integer lhs, Decimal rhs);
-	friend Decimal operator/(Integer lhs, Decimal rhs);
-	friend Decimal operator^(Integer lhs, Decimal rhs);
-
-	
+	virtual void print(ostream& os) const override;
 	friend ostream& operator<<(ostream& os, const Integer& rhs);
 	friend istream& operator>>(istream& is, Integer& rhs);
 };

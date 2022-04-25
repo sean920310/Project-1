@@ -9,6 +9,7 @@ void Integer::toInteger()
 			point--;
 		}
 	}
+	this->isInt = true;
 }
 
 Integer::Integer():Number()
@@ -25,6 +26,11 @@ Integer::Integer(const Integer& rhs):Number(rhs)
 }
 
 Integer::Integer(const string& rhs):Number(rhs)
+{
+	this->toInteger();
+}
+
+Integer::Integer(const double& rhs):Number(rhs)
 {
 	this->toInteger();
 }
@@ -49,6 +55,13 @@ Integer& Integer::operator=(const char* rhs)
 }
 
 Integer& Integer::operator=(const string& rhs)
+{
+	Integer newInt(rhs);
+	*this = newInt;
+	return *this;
+}
+
+Integer& Integer::operator=(const double& rhs)
 {
 	Integer newInt(rhs);
 	*this = newInt;
@@ -85,34 +98,18 @@ Integer Integer::operator^(const Integer& rhs)
 	return newInt;
 }
 
-Decimal operator+(Integer lhs, Decimal rhs)
+void Integer::print(ostream& os) const
 {
-	Decimal newDec(lhs.Number::operator+(rhs));
-	return newDec;
-}
-
-Decimal operator-(Integer lhs, Decimal rhs)
-{
-	Decimal newDec(lhs.Number::operator-(rhs));
-	return newDec;
-}
-
-Decimal operator*(Integer lhs, Decimal rhs)
-{
-	Decimal newDec(lhs.Number::operator*(rhs));
-	return newDec;
-}
-
-Decimal operator/(Integer lhs, Decimal rhs)
-{
-	Decimal newDec(lhs.Number::operator/(rhs));
-	return newDec;
-}
-
-Decimal operator^(Integer lhs, Decimal rhs)
-{
-	Decimal newDec(lhs.Number::operator^(rhs));
-	return newDec;
+	if (this->negative && !this->isZero())
+		os << "-";
+	for (int i = this->bigNum.size() - 1; i >= 0; i--) {
+		os << this->bigNum[i];
+		if (this->point) {
+			if (this->point == i)
+				return ;
+		}
+	}
+	return ;
 }
 
 ostream& operator<<(ostream& os, const Integer& rhs)

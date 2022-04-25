@@ -1,5 +1,131 @@
 #include "Number.h"
 
+
+vector<int> findd_Number(char in) {
+	vector<int> out;
+	out.resize(2);//0數字1權重
+	int time = 0;
+	char opr[10] = { '(',')','+','-','*','/','^','^','!','!' };
+	for (int i = 0; i < 10 + 1; i++) {
+
+
+		if (i < 10) {
+			if (in == opr[i]) {
+				out.at(0) = i;
+
+				break;
+			}
+		}
+		else
+		{
+			out.at(0) = -1;
+			out.at(1) = -1;
+		}
+		out.at(1) = i / 2;
+	}
+	return  out;
+
+}
+vector<string> Postfix_Number(string in) {
+	vector<int> number;
+	vector<int> lastnumber;
+	vector<string> out;
+	stack<int> stack;
+	bool wronginput = false;
+	string opr[10] = { "(",")", "+", "-", "*", "/","^","^","!","!" };
+	string temp;
+
+	lastnumber.resize(2); lastnumber.at(0) = -1; lastnumber.at(1) = -1;
+
+	int buf = -1;
+	int time = 0;
+	for (int i = 0; i < in.length(); i++) {
+		number = findd_Number(in[i]);
+
+		if (number.at(0) != -1 && temp.size() != 0) {
+			out.push_back(temp);
+			temp.clear();
+		}
+
+		if (stack.size() == 0)
+		{
+			buf = -1;
+		}
+
+
+		if (number.at(0) == 0) {
+			stack.push(number.at(0));
+			buf = -1;
+		}
+		else if (lastnumber.at(0) == 3 || lastnumber.at(0) == 2 && number.at(0) == 3)
+		{
+			temp = temp + in[i];
+		}
+		else if (number.at(0) == 1) {
+
+			time = stack.size();
+			for (int j = 0; j < time; j++) {
+				wronginput = true;
+				if (stack.top() == 0) {
+					wronginput = false;
+					stack.pop();
+					if (stack.size() != 0)buf = stack.top() / 2;
+					break;
+				}
+				else
+				{
+					out.push_back(opr[stack.top()]);
+					stack.pop();
+					if (stack.size() != 0)buf = stack.top() / 2;
+				}
+			}
+		}
+		else if (number.at(0) == -1)
+		{
+			temp = temp + in[i];
+		}
+		else if (number.at(1) >= buf)
+		{
+			stack.push(number.at(0));
+			if (stack.size() != 0)buf = stack.top() / 2;
+		}
+		else if (number.at(1) < buf)
+		{
+			time = stack.size();
+			for (int k = 0; k < time; k++) {
+				if (stack.size() != 0)buf = stack.top() / 2;
+				if (number.at(1) >= buf) {
+					break;
+				}
+				else if (number.at(1) < buf)
+				{
+					out.push_back(opr[stack.top()]);
+					stack.pop();
+
+				}
+			}
+			stack.push(number.at(0));
+			if (stack.size() != 0)buf = stack.top() / 2;
+		}
+		lastnumber = number;
+	}
+
+
+	if (temp.size() != 0) {
+		out.push_back(temp);
+	}
+	time = stack.size();
+	for (int i = 0; i < time; i++)
+	{
+		if (stack.top() != 0) {
+			out.push_back(opr[stack.top()]);
+			stack.pop();
+		}
+	}
+	return out;
+}
+
+
 void Number::clearZero()
 {
 	for (int i = this->bigNum.size() - 1; i > point; i--) {
@@ -43,6 +169,7 @@ Number::Number()
 	bigNum = { 0 };
 	negative = false;
 	point = 0;
+	isInt = true;
 }
 
 Number::Number(const string& rhs)
@@ -52,7 +179,7 @@ Number::Number(const string& rhs)
 	int index;
 
 	for (auto c : rhs) { //判斷是否是算式
-		if ((c > '9' || c < '0') && c != '.' && c != '-') {
+		if ((c > '9' || c < '0') && c != '.' && c != '-' && c != '+') {
 			hasOperator = true;
 			break;
 		}
@@ -87,7 +214,7 @@ Number::Number(const string& rhs)
 	else
 	{
 		int n;
-		if (this->negative) {
+		if (rhs[0]=='-'||rhs[0]=='+') {
 			n = 1;
 		}
 		else
@@ -99,6 +226,8 @@ Number::Number(const string& rhs)
 				newNum.push_back(rhs[i] - '0');
 		}
 	}
+	if (this->point)
+		this->isInt = false;
 	this->bigNum = newNum;
 	this->clearZero();
 }
@@ -108,6 +237,14 @@ Number::Number(const Number& rhs)
 	this->bigNum = rhs.bigNum;
 	this->negative = rhs.negative;
 	this->point = rhs.point;
+	this->isInt = rhs.isInt;
+}
+
+Number::Number(const double& rhs)
+{
+	string num = to_string(rhs);
+	Number newNum(num);
+	*this = newNum;
 }
 
 Number::Number(const char* rhs)
@@ -115,6 +252,30 @@ Number::Number(const char* rhs)
 	string temp = rhs;
 	Number newNum = temp;
 	*this = newNum;
+}
+
+//=====================================****分數****==========================================
+
+Fraction fixFra(Fraction fraction)
+{
+	//todo 化簡為最簡分數
+	return Fraction();
+}
+
+Number Number::absNum()
+{
+	this->negative = false;
+	return *this;
+}
+
+bool Number::isInteger()
+{
+	return this->isInt;
+}
+
+bool Number::isNegative()
+{
+	return (this->negative);
 }
 
 //=====================================****計算****==========================================
@@ -161,20 +322,21 @@ Number& Number::operator=(const Number& rhs)
 	this->bigNum = rhs.bigNum;
 	this->negative = rhs.negative;
 	this->point = rhs.point;
+	this->isInt = rhs.isInt;
 	return *this;
 }
 
 Number& Number::operator=(const double& rhs)
 {
-	string num = to_string(rhs);
-	Number newNum(num);
+	Number newNum(rhs);
 	*this = newNum;
 	return *this;
 }
 
 Number Number::operator+(const Number& rhs)
 {
-	Number in1(*this); Number in2(rhs), Ans;
+	Number in1(*this), in2(rhs), Ans;
+
 	int dd;
 	int mosP = in1.point;
 	if (in2.point > mosP) {
@@ -299,7 +461,7 @@ Number Number::operator+(const Number& rhs)
 		}
 
 	}
-
+	Ans.isInt = (this->isInt && rhs.isInt);
 	Ans.point = mosP;
 	Ans.clearZero();
 	return Ans;
@@ -333,6 +495,7 @@ Number Number::operator*(const Number& rhs)
 		carry = temp / 10;
 	}
 
+	result.isInt = this->isInt && rhs.isInt;
 	result.point = num1.point + num2.point;
 	result.clearZero();
 	return result;
@@ -342,6 +505,7 @@ Number Number::operator/(const Number& rhs)
 {
 	Number num1(*this), num2(rhs), result;
 	result.negative = !(num1.negative == num2.negative);
+	result.isInt = this->isInt && rhs.isInt;
 	num1.clearZero();
 	num2.clearZero();
 
@@ -382,7 +546,7 @@ Number Number::operator/(const Number& rhs)
 			time--;
 		}
 
-		int count = point;
+		int count = result.point;
 		while (!num1.isZero() && count <= 100)
 		{
 			int n = 0;
@@ -414,6 +578,12 @@ Number Number::operator/(const Number& rhs)
 		}
 	}
 
+	if (result.isInt) {							//如果是integer
+		for (int i = result.point; i > 0; i--) {
+			result.bigNum.erase(result.bigNum.begin());
+			result.point--;
+		}
+	}
 	result.clearZero();
 	return result;
 }
@@ -456,7 +626,7 @@ Number Number::operator^(const Number& rhs)
 				index = origin.bigNum.size() - origin.point - 3;
 			}
 			bool toPoint = false;
-			while ((!sub.isZero()||!toPoint) && root.point < 100)
+			while ((!sub.isZero() || !toPoint) && root.point < 100)
 			{
 				int i = 1;
 				for (; i <= 10; i++) {		//找到平方數
@@ -482,7 +652,7 @@ Number Number::operator^(const Number& rhs)
 				sub = sub - (temp * subNum);					//sub
 				subNum = subNum + temp;							//左邊直式結果
 				subNum.clearZero();
-				if (index-point < 0) {
+				if (index - point < 0) {
 					toPoint = true;
 					origin.pushLeft();
 					origin.pushLeft();
@@ -504,7 +674,7 @@ Number Number::operator^(const Number& rhs)
 	temp = 2;
 	num2 = num2 / temp;
 	int n = 0;
-	while (!num2.point&&!num2.isZero())			//num2是奇數
+	while (!num2.point && !num2.isZero())			//num2是奇數
 	{
 		n++;
 		num2 = num2 / temp;
@@ -527,6 +697,8 @@ Number Number::operator^(const Number& rhs)
 			result = temp / result;
 		}
 	}
+
+	result.isInt = this->isInt && rhs.isInt;
 	result.clearZero();
 	return result;
 }
@@ -617,19 +789,25 @@ bool Number::operator>(const Number& rhs) const
 	return false;
 }
 
+
 //=====================================****輸入輸出****==========================================
 
-ostream& operator<<(ostream& os, const Number& rhs)
+void Number::print(ostream& os) const
 {
-	if (rhs.negative && !rhs.isZero())
+	if (this->negative && !this->isZero())
 		os << "-";
-	for (int i = rhs.bigNum.size() - 1; i >= 0; i--) {
-		os << rhs.bigNum[i];
-		if (rhs.point) {
-			if (rhs.point == i)
+	for (int i = this->bigNum.size() - 1; i >= 0; i--) {
+		os << this->bigNum[i];
+		if (this->point) {
+			if (this->point == i)
 				os << '.';
 		}
 	}
+}
+
+ostream& operator<<(ostream& os, const Number& rhs)
+{
+	rhs.print(os);
 	return os;
 }
 
