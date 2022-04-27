@@ -81,7 +81,7 @@ vector<string> Postfix(string in) {
 			stack.push(number.at(0));
 			buf = -1;
 		}
-		else if ((i == 0 && number.at(0) == 5) || isnegetive)//-
+		else if (isnegetive)//-
 		{
 			temp = temp + in[i];
 			isnegetive = false;
@@ -109,20 +109,20 @@ vector<string> Postfix(string in) {
 		{
 			temp = temp + in[i];
 		}
-		else if (number.at(1) >= buf)
+		else if (number.at(1) > buf)
 		{
 			stack.push(number.at(0));
 			if (stack.size() != 0)buf = stack.top() / 2;
 		}
-		else if (number.at(1) < buf)
+		else if (number.at(1) <= buf)
 		{
 			time = stack.size();
 			for (int k = 0; k < time; k++) {
-				if (stack.size() != 0)buf = stack.top() / 2;
+				if (stack.size() != 0)buf = stack.top() / 2; else buf = -1;
 				if (number.at(1) >= buf) {
 					break;
 				}
-				else if (number.at(1) < buf)
+				else if (number.at(1) <= buf)
 				{
 					out.push_back(opr[stack.top()]);
 					stack.pop();
