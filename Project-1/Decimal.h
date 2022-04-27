@@ -6,8 +6,6 @@ class Integer;
 
 class Decimal:public Number
 {
-protected:
-	Fraction fraction;
 public:
 	Decimal();
 	Decimal(const Number& rhs);

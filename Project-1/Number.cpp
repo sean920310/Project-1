@@ -124,7 +124,128 @@ vector<string> Postfix_Number(string in) {
 	}
 	return out;
 }
+Number calculate(const string& input) {
+	vector<Number> numbers;
+	vector<string> postInput = Postfix_Number(input);	//postInput: 中序轉後序後的資料
+	cout << "postFix: ";
+	for (int i = 0; i < postInput.size(); i++)
+	{
+		cout << postInput.at(i) << " ";
+	}
+	cout << endl;
+	bool countNegative = false;	//奇數個負為true
+	for (int i = 0; i < postInput.size(); i++) {
+		if (postInput[i] == "+") {					//加法
+			if (numbers.size() < 2)
+				continue;
+			//throw "輸入錯誤，缺少數值";
+			Number num1, num2;
+			num2 = numbers.at(numbers.size() - 1);
+			numbers.erase(numbers.end() - 1);
+			num1 = numbers.at(numbers.size() - 1);
+			numbers.erase(numbers.end() - 1);
 
+			Number temp = (num1 + num2);
+			numbers.push_back(temp);
+		}
+		else if (postInput[i] == "-") {					//減法
+			if (numbers.size() < 2) {					//bug: 1---5
+				if (numbers.size() == 1) {
+					if (!countNegative) {
+						Number temp = "0", num;
+						num = numbers.at(numbers.size() - 1);
+						numbers.erase(numbers.end() - 1);
+						temp = temp - num;
+						numbers.push_back(temp);
+					}
+				}
+				else {
+					countNegative = !countNegative;
+				}
+			}
+			else
+			{
+				Number num1, num2;
+				num2 = numbers.at(numbers.size() - 1);
+				numbers.erase(numbers.end() - 1);
+				num1 = numbers.at(numbers.size() - 1);
+				numbers.erase(numbers.end() - 1);
+
+				Number temp = (num1 - num2);
+				numbers.push_back(temp);
+			}
+		}
+		else if (postInput[i] == "*") {					//乘法
+			if (numbers.size() < 2)
+				throw "輸入錯誤，缺少數值";
+			Number num1, num2;
+			num2 = numbers.at(numbers.size() - 1);
+			numbers.erase(numbers.end() - 1);
+			num1 = numbers.at(numbers.size() - 1);
+			numbers.erase(numbers.end() - 1);
+
+			Number temp = (num1 * num2);
+			numbers.push_back(temp);
+		}
+		else if (postInput[i] == "/") {					//除法
+			if (numbers.size() < 2)
+				throw "輸入錯誤，缺少數值";
+			Number num1, num2;
+			num2 = numbers.at(numbers.size() - 1);
+			numbers.erase(numbers.end() - 1);
+			num1 = numbers.at(numbers.size() - 1);
+			numbers.erase(numbers.end() - 1);
+
+			Number temp = (num1 / num2);
+			numbers.push_back(temp);
+		}
+		else if (postInput[i] == "^") {					//冪次
+			if (numbers.size() < 2)
+				throw "輸入錯誤，缺少數值";
+			Number num1, num2;
+			num2 = numbers.at(numbers.size() - 1);
+			numbers.erase(numbers.end() - 1);
+			num1 = numbers.at(numbers.size() - 1);
+			numbers.erase(numbers.end() - 1);
+
+			Number temp = (num1 ^ num2);
+			numbers.push_back(temp);
+		}
+		else if (postInput[i] == "!") {					//階乘
+			if (numbers.size() < 1)
+				throw "輸入錯誤，缺少數值";
+			Number temp;
+			temp = numbers.at(numbers.size() - 1);
+			numbers.erase(numbers.end() - 1);
+
+			temp.factorial();
+			numbers.push_back(temp);
+		}
+		else
+		{
+			bool isDigit = true;
+			for (auto c : postInput[i]) {
+				if ((c > '9' || c < '0') && c != '.' && c != '-' && c != '+') {
+					isDigit = false;
+					break;
+				}
+			}
+			if (isDigit) {										//是數字還是變數
+				Number newNum = postInput[i];
+				if (countNegative) {
+					Number temp = "0";
+					newNum = temp - newNum;
+				}
+				numbers.push_back(newNum);
+			}
+			else
+			{
+				throw "找不到變數";
+			}
+		}
+	}
+	return numbers.back();
+}
 
 void Number::clearZero()
 {
@@ -166,6 +287,9 @@ void Number::pushRight()
 
 Number::Number()
 {
+	fraction.resize(2);
+	fraction[0] = "0";
+	fraction[1] = "1";
 	bigNum = { 0 };
 	negative = false;
 	point = 0;
@@ -179,7 +303,7 @@ Number::Number(const string& rhs)
 	int index;
 
 	for (auto c : rhs) { //判斷是否是算式
-		if ((c > '9' || c < '0') && c != '.' && c != '-' && c != '+') {
+		if ((c > '9' || c < '0') && c != '.' && c != '-') {
 			hasOperator = true;
 			break;
 		}
@@ -209,12 +333,13 @@ Number::Number(const string& rhs)
 
 	if (hasOperator) {
 		//todo calculate
-
+		*this = calculate(rhs);
+		newNum = this->bigNum;
 	}
 	else
 	{
 		int n;
-		if (rhs[0]=='-'||rhs[0]=='+') {
+		if (rhs[0] == '-') {
 			n = 1;
 		}
 		else
@@ -230,10 +355,17 @@ Number::Number(const string& rhs)
 		this->isInt = false;
 	this->bigNum = newNum;
 	this->clearZero();
+
+	Number temp = *this;
+	temp.absNum();
+	fraction.resize(2);
+	fraction[0] = temp.toString();
+	fraction[1] = "1";
 }
 
 Number::Number(const Number& rhs)
 {
+	this->fraction = rhs.fraction;
 	this->bigNum = rhs.bigNum;
 	this->negative = rhs.negative;
 	this->point = rhs.point;
@@ -254,29 +386,6 @@ Number::Number(const char* rhs)
 	*this = newNum;
 }
 
-//=====================================****分數****==========================================
-
-Fraction fixFra(Fraction fraction)
-{
-	//todo 化簡為最簡分數
-	return Fraction();
-}
-
-Number Number::absNum()
-{
-	this->negative = false;
-	return *this;
-}
-
-bool Number::isInteger()
-{
-	return this->isInt;
-}
-
-bool Number::isNegative()
-{
-	return (this->negative);
-}
 
 //=====================================****計算****==========================================
 
@@ -314,11 +423,14 @@ void Number::factorial()
 		}
 	}
 	this->clearZero();
+	fraction[0] = this->toString();
+	fraction[1] = "1";
 	return;
 }
 
 Number& Number::operator=(const Number& rhs)
 {
+	this->fraction = rhs.fraction;
 	this->bigNum = rhs.bigNum;
 	this->negative = rhs.negative;
 	this->point = rhs.point;
@@ -464,6 +576,8 @@ Number Number::operator+(const Number& rhs)
 	Ans.isInt = (this->isInt && rhs.isInt);
 	Ans.point = mosP;
 	Ans.clearZero();
+	//fraction
+	Ans.fraction = fraAdd(*this, rhs);
 	return Ans;
 }
 
@@ -471,7 +585,6 @@ Number Number::operator-(const Number& rhs)
 {
 	Number a(*this); Number b(rhs);
 	b.negative = !b.negative;
-
 
 	return a + b;
 }
@@ -498,6 +611,7 @@ Number Number::operator*(const Number& rhs)
 	result.isInt = this->isInt && rhs.isInt;
 	result.point = num1.point + num2.point;
 	result.clearZero();
+	result.fraction = fraMul(*this, rhs);
 	return result;
 }
 
@@ -547,7 +661,7 @@ Number Number::operator/(const Number& rhs)
 		}
 
 		int count = result.point;
-		while (!num1.isZero() && count <= 100)
+		while (!num1.isZero() && (count <= 100||time>-100))
 		{
 			int n = 0;
 			while (num1 > num2 || num2 == num1)
@@ -574,6 +688,7 @@ Number Number::operator/(const Number& rhs)
 			num2.bigNum.push_back(0);//除10
 			num2.point++;
 			time--;
+			
 			count++;
 		}
 	}
@@ -585,6 +700,7 @@ Number Number::operator/(const Number& rhs)
 		}
 	}
 	result.clearZero();
+	result.fraction = fraDiv(*this, rhs);
 	return result;
 }
 
@@ -700,6 +816,7 @@ Number Number::operator^(const Number& rhs)
 
 	result.isInt = this->isInt && rhs.isInt;
 	result.clearZero();
+	result.fraction = fraPow(*this, rhs);
 	return result;
 }
 
@@ -805,6 +922,7 @@ void Number::print(ostream& os) const
 	}
 }
 
+
 ostream& operator<<(ostream& os, const Number& rhs)
 {
 	rhs.print(os);
@@ -819,6 +937,114 @@ istream& operator>>(istream& is, Number& rhs)
 	return is;
 }
 
+//=====================================****分數****==========================================
+
+
+vector<string> Number::fixFra()
+{
+	return vector<string>();
+}
+
+Number Number::absNum()
+{
+	this->negative = false;
+	return *this;
+}
+
+bool Number::isInteger()
+{
+	return this->isInt;
+}
+
+bool Number::isNegative()
+{
+	return (this->negative);
+}
+
+string Number::toString()
+{
+	string result = "";
+	for (int i = 0; i < this->bigNum.size(); i++) {
+		result = to_string(this->bigNum[i]) + result;
+		if (i + 1 == point) {
+			result = "." + result;
+		}
+	}
+	if (this->negative)
+		result = "-" + result;
+
+	return result;
+}
+
+vector<string> Number::fraAdd(const Number& lhs, const Number& rhs)
+{
+	vector<string> fra1 = lhs.fraction, fra2 = rhs.fraction;
+	if (lhs.negative == rhs.negative) {
+		fra1[0] = "(" + fra1[0] + "*" + fra2[1] + "+" + fra1[1] + "*" + fra2[0] + ")";
+		fra1[1] = "(" + fra1[1] + "*" + fra2[1] + ")";
+		//fra1.fix();
+		return fra1;
+	}
+	else {
+		if (lhs.negative) {
+			return fraSub(rhs, lhs);
+		}
+		else {
+			return fraSub(lhs, rhs);
+		}
+	}
+}
+
+vector<string> Number::fraSub(const Number& lhs, const Number& rhs)
+{
+	vector<string> fra1 = lhs.fraction, fra2 = rhs.fraction;
+	if (lhs.negative == rhs.negative) {
+		fra1[0] = "(" + fra1[0] + "*" + fra2[1] + "-" + fra1[1] + "*" + fra2[0] + ")";
+		fra1[1] = "(" + fra1[1] + "*" + fra2[1] + ")";
+		//fra1.fix();
+		return fra1;
+	}
+	else {
+		if (lhs.negative) {
+			Number temp = lhs;
+			temp.negative = false;
+			return fraAdd(temp, rhs);
+		}
+		else {
+			Number temp = rhs;
+			temp.negative = false;
+			return fraAdd(lhs, temp);
+		}
+	}
+}
+
+vector<string> Number::fraMul(const Number& lhs, const Number& rhs)
+{
+	vector<string> newFra;
+	newFra.resize(2);
+	newFra[0] = "(" + this->fraction[0] + "*" + rhs.fraction[0] + ")";
+	newFra[1] = "(" + this->fraction[1] + "*" + rhs.fraction[1] + ")";
+	return newFra;
+}
+
+vector<string> Number::fraDiv(const Number& lhs, const Number& rhs)
+{
+	vector<string> newFra;
+	newFra.resize(2);
+	newFra[0] = "(" + this->fraction[0] + "*" + rhs.fraction[1] + ")";
+	newFra[1] = "(" + this->fraction[1] + "*" + rhs.fraction[0] + ")";
+	return newFra;
+}
+
+vector<string> Number::fraPow(const Number& lhs, const Number& rhs)
+{
+	vector<string> newFra;
+	Number temp = rhs;
+	newFra.resize(2);
+	newFra[0] = this->fraction[0] + "^" + temp.toString();
+	newFra[1] = this->fraction[1] + "^" + temp.toString();
+	return newFra;
+}
 
 
 
