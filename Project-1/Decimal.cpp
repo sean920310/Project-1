@@ -166,10 +166,14 @@ Decimal operator^(Integer lhs, Decimal rhs)
 
 void Decimal::print(ostream& os) const
 {
+	Decimal molecular(this->fraction[0]), denominator(this->fraction[1]), output;
+	Decimal temp = 1;
+	if (denominator == temp)
+		output = molecular;
+	else
+		output = molecular / denominator;
 	if (this->negative && !this->isZero())
 		os << "-";
-	Decimal molecular(this->fraction[0]), denominator(this->fraction[1]), output;
-	output = molecular / denominator;
 	//Decimal output;
 	//output = *this;
 	for (int i = output.bigNum.size() - 1; i >= 0; i--) {
@@ -188,10 +192,14 @@ void Decimal::print(ostream& os) const
 
 ostream& operator<<(ostream& os, const Decimal& rhs)
 {
+	Decimal molecular(rhs.fraction[0]), denominator(rhs.fraction[1]), output;
+	Decimal temp = 1;
+	if (denominator == temp)
+		output = molecular;
+	else
+		output = molecular / denominator;
 	if (rhs.negative && !rhs.isZero())
 		os << "-";
-	Decimal molecular(rhs.fraction[0]), denominator(rhs.fraction[1]), output;
-	output = molecular / denominator;
 	//Decimal output;
 	//output = rhs;
 	for (int i = output.bigNum.size() - 1; i >= 0; i--) {

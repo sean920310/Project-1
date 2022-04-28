@@ -32,7 +32,7 @@ vector<int> findd(char in) {
 		if (i < 12) {
 			if (in == opr[i]) {
 				out.at(0) = i;
-
+				out.at(1) = i / 2;
 				break;
 			}
 		}
@@ -46,7 +46,7 @@ vector<int> findd(char in) {
 	return  out;
 
 }
-vector<string> Postfix(string in) {
+vector<string> Postfix(string inp) {
 	vector<int> number;
 	vector<int> lastnumber;
 	vector<string> out;
@@ -58,13 +58,46 @@ vector<string> Postfix(string in) {
 
 	lastnumber.resize(2); lastnumber.at(0) = -1; lastnumber.at(1) = -1;
 
+	string in = inp;
+	string plus;
+
+	int index = 0;
+	for (int i = 0; i < in.length(); i++) {
+
+		if (index == 1 && in[i] != '-') {
+			plus = plus + '-';
+		}
+
+
+		if (in[i] != '-') {
+			plus = plus + in[i];
+			index = 0;
+		}
+		else if (in[i] == '-' && index == 1)
+		{
+			plus = plus + '+';
+			index = 0;
+		}
+		else if (in[i] == '-')
+		{
+			index++;
+		}
+	}
+
+	if (index == 1) {
+		plus = plus + '-';
+	}
+	in = plus;
+
 	int buf = -1;
 	int time = 0;
+
+
 	for (int i = 0; i < in.length(); i++) {
 		number = findd(in[i]);
 		isnegetive = lastnumber.at(0) != -1 && lastnumber.at(0) != 1 && number.at(0) == 5;
 
-
+		if (stack.size() != 0)buf = stack.top() / 2; else buf = -1;
 
 		if (number.at(0) != -1 && temp.size() != 0) {
 			out.push_back(temp);
@@ -81,7 +114,7 @@ vector<string> Postfix(string in) {
 			stack.push(number.at(0));
 			buf = -1;
 		}
-		else if (isnegetive)//-
+		else if ((i == 0 && number.at(0) == 5) || isnegetive)//-
 		{
 			temp = temp + in[i];
 			isnegetive = false;
@@ -93,15 +126,17 @@ vector<string> Postfix(string in) {
 				wronginput = true;
 				if (stack.top() == 0) {
 					wronginput = false;
+
 					stack.pop();
-					if (stack.size() != 0)buf = stack.top() / 2;
+					if (stack.size() != 0)buf = stack.top() / 2; else buf = -1;
 					break;
 				}
 				else
 				{
+					//cout << opr[stack.top()] << endl;
 					out.push_back(opr[stack.top()]);
 					stack.pop();
-					if (stack.size() != 0)buf = stack.top() / 2;
+					if (stack.size() != 0)buf = stack.top() / 2; else buf = -1;
 				}
 			}
 		}
@@ -119,7 +154,7 @@ vector<string> Postfix(string in) {
 			time = stack.size();
 			for (int k = 0; k < time; k++) {
 				if (stack.size() != 0)buf = stack.top() / 2; else buf = -1;
-				if (number.at(1) >= buf) {
+				if (number.at(1) > buf) {
 					break;
 				}
 				else if (number.at(1) <= buf)
@@ -130,7 +165,7 @@ vector<string> Postfix(string in) {
 				}
 			}
 			stack.push(number.at(0));
-			if (stack.size() != 0)buf = stack.top() / 2;
+			if (stack.size() != 0)buf = stack.top() / 2; else buf = -1;
 		}
 		lastnumber = number;
 	}
@@ -142,6 +177,7 @@ vector<string> Postfix(string in) {
 	time = stack.size();
 	for (int i = 0; i < time; i++)
 	{
+		//cout << "!!!!" << endl;
 		if (stack.top() != 0) {
 			out.push_back(opr[stack.top()]);
 			stack.pop();
@@ -153,12 +189,12 @@ vector<string> Postfix(string in) {
 }
 void calculate(vector<NumWithName>& vars, vector<Number*>& numbers, string& input) {
 	vector<string> postInput = Postfix(input);	//postInput: 中序轉後序後的資料
-	cout << "postFix: ";
+	/*cout << "postFix: ";
 	for (int i = 0; i < postInput.size(); i++)
 	{
 		cout << postInput.at(i) << " ";
 	}
-	cout << endl;
+	cout << endl;*/
 	bool countNegative = false;	//奇數個負為true
 	for (int i = 0; i < postInput.size(); i++) {
 		if (postInput[i] == "+") {					//加法
